@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minun sivuni</title>
+    <title>Lassi Heiskanen</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         html {
@@ -104,27 +104,31 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* valinnainen visuaalinen parannus */
         }
-        .carousel {
-            position: relative;
-            max-width: 100%;
-            overflow: hidden;
-            margin: 2rem auto;
-        }
 
-        .carousel-track {
-            display: flex;
-            transition: transform 0.5s ease-in-out;
-        }
+        .carousel-wrapper {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
 
-        .carousel-track img {
-            width: 100%;
-            max-width: 500px;
-            height: auto;
-            margin: 0 auto;
-            flex-shrink: 0;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
+.carousel {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  will-change: transform;
+}
+
+.carousel img {
+  height: auto;
+  width: auto;
+  max-height: 300px;
+  margin: 0 1rem;
+  flex-shrink: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
 
 .carousel-button {
   position: absolute;
@@ -157,24 +161,29 @@
 </head>
 
 <script>
+  const track = document.getElementById('carousel-track');
+  const images = track.querySelectorAll('img');
   let currentIndex = 0;
 
-  function moveSlide(direction) {
-    const track = document.getElementById('carousel-track');
-    const images = track.querySelectorAll('img');
-    const total = images.length;
-
-    currentIndex = (currentIndex + direction + total) % total;
-    const offset = -images[0].clientWidth * currentIndex;
-
+  function moveToNextImage() {
+    currentIndex++;
+    if (currentIndex >= images.length) {
+      currentIndex = 0;
+    }
+    const offset = -images[currentIndex].offsetLeft + (track.parentElement.offsetWidth - images[currentIndex].width) / 2;
     track.style.transform = `translateX(${offset}px)`;
   }
 
-  // Automaattinen vieritys 4 sekunnin välein
-  setInterval(() => {
-    moveSlide(1);
-  }, 4000);
+  // Keskitetään ensimmäinen kuva alussa
+  window.addEventListener('load', () => {
+    const initialOffset = -images[0].offsetLeft + (track.parentElement.offsetWidth - images[0].width) / 2;
+    track.style.transform = `translateX(${initialOffset}px)`;
+  });
+
+  // Automaattinen vieritys
+  setInterval(moveToNextImage, 4000);
 </script>
+
 
     
 <body>

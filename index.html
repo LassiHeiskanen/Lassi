@@ -104,10 +104,79 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* valinnainen visuaalinen parannus */
         }
+        .carousel {
+            position: relative;
+            max-width: 100%;
+            overflow: hidden;
+            margin: 2rem auto;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-track img {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            margin: 0 auto;
+            flex-shrink: 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+.carousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #222;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0.7;
+}
+
+.carousel-button:hover {
+  opacity: 1;
+}
+
+.carousel-button.prev {
+  left: 10px;
+}
+
+.carousel-button.next {
+  right: 10px;
+}
 
 
     </style>
 </head>
+
+<script>
+  let currentIndex = 0;
+
+  function moveSlide(direction) {
+    const track = document.getElementById('carousel-track');
+    const images = track.querySelectorAll('img');
+    const total = images.length;
+
+    currentIndex = (currentIndex + direction + total) % total;
+    const offset = -images[0].clientWidth * currentIndex;
+
+    track.style.transform = `translateX(${offset}px)`;
+  }
+
+  // Automaattinen vieritys 4 sekunnin välein
+  setInterval(() => {
+    moveSlide(1);
+  }, 4000);
+</script>
+
+    
 <body>
     <header>
         <h1>Lassi Heiskanen</h1>
@@ -159,6 +228,22 @@
         <p>Urheilun ohella tärkeä osa elämääni on musiikki. Laulan bändissä nimeltä <em>Heiskanen & Muut</em>, joka on ollut koossa jo yli kymmenen vuotta. Kirjoitan pääosin yhtyeen kappaleiden sanoitukset. Keikkailemme nykyisin harvemmin, mutta muutama vuosi sitten soitimme kymmeniä keikkoja vuodessa – kokemus, joka on jättänyt pysyviä muistoja ja intohimon esiintymiseen.</p>
     
         <div class="image-placeholder">Kuva harrastuksista</div>
+
+
+        <div class="carousel">
+          <button class="carousel-button prev" onclick="moveSlide(-1)">‹</button>
+          <div class="carousel-track" id="carousel-track">
+            <img src="1.jpg" alt="CrossFit" />
+            <img src="2.jpg" alt="Rogaining" />
+            <img src="3.jpg" alt="Maantiepyöräily" />
+            <img src="4.jpg" alt="Juoksu metsässä" />
+            <img src="5.jpg" alt="Järven rannalla" />
+            <img src="6.jpg" alt="CrossFit seinäpallo" />
+            <img src="7.jpg" alt="CrossFit poseeraus" />
+      </div>
+          <button class="carousel-button next" onclick="moveSlide(1)">›</button>
+</div>
+
     </section>
 
 

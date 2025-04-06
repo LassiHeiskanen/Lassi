@@ -101,24 +101,28 @@
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-    /* Karusellin ulkokuori */
+    /* Infiniittinen karuselli: 
+       Karusellin säilön kokoa pienennetään (50% pienempi) ja asetetaan niin, 
+       että vain yksi kuva näkyy kerrallaan. */
     .carousel-wrapper {
-      width: 100%;
+      width: 50%;
+      max-width: 300px;  /* säätämällä tätä arvoa voit muuttaa kuvan maksimikokoa */
+      height: 300px;     /* korkeus voidaan säätää tarpeen mukaan */
       overflow: hidden;
       position: relative;
       margin: 2rem auto;
     }
-    /* Karusellin sisältö */
     .carousel-track {
       display: flex;
       transition: transform 0.5s ease-in-out;
+      height: 100%;
     }
-    /* Kuvien pienennys 50%:iin ja keskitys */
+    /* Kuvia skaalataan säilyttäen suhdeluvut, sopimaan säilöön */
     .carousel-track img {
-      width: 50%;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
       flex-shrink: 0;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
     /* Navigaatiopainikkeet */
     .carousel-button {
@@ -194,7 +198,7 @@
     <p>Lisäksi nautin juoksemisesta ja maantiepyöräilystä – molemmat tarjoavat omalla tavallaan tilaa ajatuksille ja hyvää rasitusta keholle.</p>
     <p>Urheilun ohella tärkeä osa elämääni on musiikki. Laulan bändissä nimeltä <em>Heiskanen & Muut</em>, joka on ollut koossa jo yli kymmenen vuotta. Kirjoitan pääosin yhtyeen kappaleiden sanoitukset. Keikkailemme nykyisin harvemmin, mutta muutama vuosi sitten soitimme kymmeniä keikkoja vuodessa – kokemus, joka on jättänyt pysyviä muistoja ja intohimon esiintymiseen.</p>
     
-    <!-- Infiniittinen karuselli -->
+    <!-- Infiniittinen karuselli, jossa näkyy kerrallaan yksi kuva -->
     <div class="carousel-wrapper">
       <button class="carousel-button prev" onclick="moveSlide(-1)">‹</button>
       <div class="carousel-track" id="carousel-track">
@@ -227,40 +231,32 @@
   <script>
     const track = document.getElementById('carousel-track');
     let images = track.querySelectorAll('img');
-    // Aseta alkuindeksiksi 1 (oikea ensimmäinen kuva, koska indeksissä 0 on kloni viimeisestä)
+    // Alkuindeksinä käytetään ensimmäistä oikeaa kuvaa (indeksi 1, koska indeksissä 0 on kloni)
     let currentIndex = 1;
-    // Aseta transition-ominaisuus aluksi
     track.style.transition = 'transform 0.5s ease-in-out';
 
-    // Päivittää karusellin siirtymisen siten, että nykyinen kuva on keskellä
+    // Päivittää karusellin siirtymisen siten, että säilön leveys määrää yhden kuvan leveyden
     function updateCarousel() {
       const wrapperWidth = track.parentElement.offsetWidth;
-      const currentImage = images[currentIndex];
-      const offset = -currentImage.offsetLeft + (wrapperWidth - currentImage.offsetWidth) / 2;
-      track.style.transform = `translateX(${offset}px)`;
+      track.style.transform = `translateX(-${currentIndex * wrapperWidth}px)`;
     }
 
-    // Siirretään karusellia eteen- tai taaksepäin
     function moveSlide(direction) {
       currentIndex += direction;
       updateCarousel();
     }
 
-    // Kun transition on päättynyt, tarkistetaan onko kyseessä klonikuva
+    // Jos saavutetaan klonikuva, siirrytään ilman transitionia oikeaan kohtaan
     track.addEventListener('transitionend', () => {
       images = track.querySelectorAll('img'); // päivitetään lista
       if (images[currentIndex].classList.contains('clone')) {
-        // Poistetaan transition, jotta hyppy ei animoidu
         track.style.transition = 'none';
         if (currentIndex === 0) {
-          // Jos ollaan vasemmalla klonilla, hypätään oikeaan viimeiseen kuvaan
           currentIndex = images.length - 2;
         } else if (currentIndex === images.length - 1) {
-          // Jos ollaan oikealla klonilla, hypätään oikeaan ensimmäiseen kuvaan
           currentIndex = 1;
         }
         updateCarousel();
-        // Palautetaan transition
         setTimeout(() => {
           track.style.transition = 'transform 0.5s ease-in-out';
         }, 0);
@@ -272,10 +268,7 @@
       moveSlide(1);
     }, 4000);
 
-    // Päivitetään karuselli mm. ikkunan koon muuttuessa
     window.addEventListener('resize', updateCarousel);
-
-    // Alustetaan karuselli kuvan latauksen jälkeen
     window.addEventListener('load', updateCarousel);
   </script>
 </body>

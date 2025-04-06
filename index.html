@@ -113,9 +113,9 @@
       display: flex;
       transition: transform 0.5s ease-in-out;
     }
-    /* Jokainen kuva täyttää konttinsa */
+    /* Kuvien pienennys 50%:iin ja keskitys */
     .carousel-track img {
-      width: 100%;
+      width: 50%;
       flex-shrink: 0;
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -194,10 +194,13 @@
     <p>Lisäksi nautin juoksemisesta ja maantiepyöräilystä – molemmat tarjoavat omalla tavallaan tilaa ajatuksille ja hyvää rasitusta keholle.</p>
     <p>Urheilun ohella tärkeä osa elämääni on musiikki. Laulan bändissä nimeltä <em>Heiskanen & Muut</em>, joka on ollut koossa jo yli kymmenen vuotta. Kirjoitan pääosin yhtyeen kappaleiden sanoitukset. Keikkailemme nykyisin harvemmin, mutta muutama vuosi sitten soitimme kymmeniä keikkoja vuodessa – kokemus, joka on jättänyt pysyviä muistoja ja intohimon esiintymiseen.</p>
     
-    <!-- Karuselli -->
+    <!-- Infiniittinen karuselli -->
     <div class="carousel-wrapper">
       <button class="carousel-button prev" onclick="moveSlide(-1)">‹</button>
       <div class="carousel-track" id="carousel-track">
+        <!-- Klonataan viimeinen kuva ensimmäiseksi -->
+        <img src="7.png" alt="CrossFit" class="clone">
+        <!-- Alkuperäiset kuvat -->
         <img src="1.png" alt="CrossFit" />
         <img src="2.png" alt="Rogaining" />
         <img src="3.png" alt="Maantiepyöräily" />
@@ -205,6 +208,8 @@
         <img src="5.png" alt="Juoksu" />
         <img src="6.png" alt="CrossFit" />
         <img src="7.png" alt="CrossFit" />
+        <!-- Klonataan ensimmäinen kuva viimeiseksi -->
+        <img src="1.png" alt="CrossFit" class="clone">
       </div>
       <button class="carousel-button next" onclick="moveSlide(1)">›</button>
     </div>
@@ -216,30 +221,51 @@
   </section>
 
   <footer>
-    <p>&copy; 2025 Minun kotisivuni</p>
+    <p>&copy; 2025 Lassi Heiskanen</p>
   </footer>
 
   <script>
     const track = document.getElementById('carousel-track');
-    const images = track.querySelectorAll('img');
-    let currentIndex = 0;
+    let images = track.querySelectorAll('img');
+    // Aseta alkuindeksiksi 1 (oikea ensimmäinen kuva, koska indeksissä 0 on kloni viimeisestä)
+    let currentIndex = 1;
+    // Aseta transition-ominaisuus aluksi
+    track.style.transition = 'transform 0.5s ease-in-out';
 
-    // Päivittää karusellin siirtymisen
+    // Päivittää karusellin siirtymisen siten, että nykyinen kuva on keskellä
     function updateCarousel() {
-      const slideWidth = track.parentElement.offsetWidth;
-      track.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+      const wrapperWidth = track.parentElement.offsetWidth;
+      const currentImage = images[currentIndex];
+      const offset = -currentImage.offsetLeft + (wrapperWidth - currentImage.offsetWidth) / 2;
+      track.style.transform = `translateX(${offset}px)`;
     }
 
     // Siirretään karusellia eteen- tai taaksepäin
     function moveSlide(direction) {
       currentIndex += direction;
-      if (currentIndex < 0) {
-        currentIndex = images.length - 1;
-      } else if (currentIndex >= images.length) {
-        currentIndex = 0;
-      }
       updateCarousel();
     }
+
+    // Kun transition on päättynyt, tarkistetaan onko kyseessä klonikuva
+    track.addEventListener('transitionend', () => {
+      images = track.querySelectorAll('img'); // päivitetään lista
+      if (images[currentIndex].classList.contains('clone')) {
+        // Poistetaan transition, jotta hyppy ei animoidu
+        track.style.transition = 'none';
+        if (currentIndex === 0) {
+          // Jos ollaan vasemmalla klonilla, hypätään oikeaan viimeiseen kuvaan
+          currentIndex = images.length - 2;
+        } else if (currentIndex === images.length - 1) {
+          // Jos ollaan oikealla klonilla, hypätään oikeaan ensimmäiseen kuvaan
+          currentIndex = 1;
+        }
+        updateCarousel();
+        // Palautetaan transition
+        setTimeout(() => {
+          track.style.transition = 'transform 0.5s ease-in-out';
+        }, 0);
+      }
+    });
 
     // Automaattinen siirtyminen 4 sekunnin välein
     setInterval(() => {
